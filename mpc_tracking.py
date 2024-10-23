@@ -89,8 +89,8 @@ def getCostMatrices(num_joints):
     num_controls = num_joints
     
     # Q = 1 * np.eye(num_states)  # State cost matrix
-    p_w = 10000
-    v_w = 10
+    p_w = 0
+    v_w = 10000 
     Q_diag = np.array([p_w, p_w, p_w,p_w, p_w, p_w,p_w, v_w, v_w, v_w,v_w, v_w, v_w,v_w])
     Q = np.diag(Q_diag)
     
@@ -183,7 +183,8 @@ def main():
        
         # Control command
         cmd.tau_cmd = dyn_cancel(dyn_model, q_mes, qd_mes, u_mpc)
-        sim.Step(cmd, "torque")  # Simulation step with torque command
+        cmd.SetControlCmd(cmd.tau_cmd, ["torque"]*7)  # Simulation step with torque command
+        sim.Step(cmd)  # Simulation step with torque command
 
         # print(cmd.tau_cmd)
         # Exit logic with 'q' key
@@ -207,36 +208,33 @@ def main():
         # get real time
         current_time += time_step
         #print(f"Time: {current_time}")
-    
-    
-    
-    # Plotting
-    for i in range(num_joints):
-        plt.figure(figsize=(10, 8))
-        
-        # Position plot for joint i
-        plt.subplot(2, 1, 1)
-        plt.plot([q[i] for q in q_mes_all], label=f'Measured Position - Joint {i+1}')
-        plt.plot([q[i] for q in q_d_all], label=f'Desired Position - Joint {i+1}', linestyle='--')
-        plt.title(f'Position Tracking for Joint {i+1}')
-        plt.xlabel('Time steps')
-        plt.ylabel('Position')
-        plt.legend()
 
-        # Velocity plot for joint i
-        plt.subplot(2, 1, 2)
-        plt.plot([qd[i] for qd in qd_mes_all], label=f'Measured Velocity - Joint {i+1}')
-        plt.plot([qd[i] for qd in qd_d_all], label=f'Desired Velocity - Joint {i+1}', linestyle='--')
-        plt.title(f'Velocity Tracking for Joint {i+1}')
-        plt.xlabel('Time steps')
-        plt.ylabel('Velocity')
-        plt.legend()
+    rows = 3  # 3 rows for a grid layout
+    cols = 2  # 1 column layout for each joint
+    
+    # Plot the position for each joint in a separate figure
+    fig_pos, axes = plt.subplots(rows, cols, figsize=(8, 12))
+    fig_pos.suptitle('Position & Velocity Tracking for 3 Joints')
+    
+    for i in range(3):
+        ax = axes[i,0]
+        ax.plot([q[i] for q in q_mes_all], label=f'Measured Position')
+        ax.plot([q[i] for q in q_d_all], label=f'Desired Position', linestyle='--')
+        ax.set_title(f'Joint {i+1} Position')
+        ax.set_xlabel('Time steps')
+        ax.set_ylabel('Position')
+        ax.legend(loc='lower right')
 
-        plt.tight_layout()
-        plt.show()
-    
-     
-    
+        ax = axes[i,1]
+        ax.plot([qd[i] for qd in qd_mes_all], label=f'Measured Velocity')
+        ax.plot([qd[i] for qd in qd_d_all], label=f'Desired Velocity', linestyle='--')
+        ax.set_title(f'Joint {i+1} Velocity')
+        ax.set_xlabel('Time steps')
+        ax.set_ylabel('Velocity')
+        ax.legend(loc='lower right')
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  # Adjust layout for title
+    #plt.savefig('task4/trackingVelocityOnly_v1000.png')
+    plt.show()
     
 if __name__ == '__main__':
     

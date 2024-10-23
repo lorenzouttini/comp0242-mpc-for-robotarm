@@ -32,7 +32,13 @@ class TrackerModel:
         ])
 
         # Compute matrix B
-        self.B = np.vstack((self.delta * B_cont, np.eye(self.m)))
+        #self.B = np.vstack((delta * B_cont, np.eye(self.m)))
+        #Can get rid of top line because delta is not the control input is not dependant on B_Cont
+        
+        self.B = np.block([
+            [np.zeros((14,7))],
+             [np.eye(7)]
+        ])
 
         # Compute matrix C
         self.C = np.hstack((C_cont, np.zeros((self.q, self.m))))
