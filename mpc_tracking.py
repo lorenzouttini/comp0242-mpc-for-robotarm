@@ -89,14 +89,14 @@ def getCostMatrices(num_joints):
     num_controls = num_joints
     
     # Q = 1 * np.eye(num_states)  # State cost matrix
-    p_w = 0
-    v_w = 10000 
+    p_w = 10000
+    v_w = 10
     Q_diag = np.array([p_w, p_w, p_w,p_w, p_w, p_w,p_w, v_w, v_w, v_w,v_w, v_w, v_w,v_w])
     Q = np.diag(Q_diag)
     
     print(Q)
 
-    R = 0.1 * np.eye(num_controls)  # Control input cost matrix
+    R = 0.2 * np.eye(num_controls)  # Control input cost matrix
     
     return Q, R
 
@@ -233,7 +233,7 @@ def main():
         ax.set_ylabel('Velocity')
         ax.legend(loc='lower right')
     plt.tight_layout(rect=[0, 0, 1, 0.95])  # Adjust layout for title
-    #plt.savefig('task4/trackingVelocityOnly_v1000.png')
+  #  plt.savefig('task1/defaultStateCosts_Control_Input__0.png')
     plt.show()
     
 if __name__ == '__main__':
